@@ -63,13 +63,15 @@ class MainActivity : ComponentActivity() {
 private fun Greeting() {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Home") }
+    var currentView by remember { mutableStateOf("服務總覽") }
+    var imageAlpha by remember { mutableStateOf(1f) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Image(
-                        painter = painterResource(id = R.drawable.maria),
+                        painter = painterResource(id = R.drawable.maria), // 將 R.drawable.maria 替換為你的圖片資源 ID
                         contentDescription = null,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -83,14 +85,14 @@ private fun Greeting() {
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("簡介") },
+                            text = { Text("簡介", color = Color.Blue) },
                             onClick = {
                                 selectedOption = "簡介"
                                 expanded = false
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text("主要機構") },
+                            text = { Text("主要機構", color = Color.Red) },
                             onClick = {
                                 selectedOption = "主要機構"
                                 expanded = false
@@ -101,31 +103,67 @@ private fun Greeting() {
             )
         },
         content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    when (selectedOption) {
-                        "簡介" -> Text(
-                            text = "簡介",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.Blue,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        )
-                        "主要機構" -> Text(
-                            text = "主要機構",
-                            color = Color.Red,
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        )
-
-
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    item {
+                        when (selectedOption) {
+                            "簡介" -> Text(
+                                text = "簡介",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.Blue,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            "主要機構" -> Text(
+                                text = "主要機構",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
                     }
+                }
+
+                val imageRes = when (currentView) {
+                    "服務總覽" -> R.drawable.service
+                    else -> R.drawable.me
+                }
+
+                val alpha by animateFloatAsState(
+                    targetValue = imageAlpha,
+                    animationSpec = tween(durationMillis = 3000)
+                )
+
+                LaunchedEffect(currentView) {
+                    imageAlpha = 0f
+                    delay(3000)
+                    imageAlpha = 1f
+                }
+
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp)
+                        .graphicsLayer(alpha = alpha)
+                )
+
+                Button(onClick = {
+                    currentView = if (currentView == "服務總覽") "作者：資管二B顏愷" else "服務總覽"
+                }) {
+                    Text(text = if (currentView == "服務總覽") "作者：資管二B顏愷" else "服務總覽")
                 }
             }
         }
