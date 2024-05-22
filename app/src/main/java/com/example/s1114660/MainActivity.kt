@@ -71,7 +71,7 @@ private fun Greeting() {
             TopAppBar(
                 title = {
                     Image(
-                        painter = painterResource(id = R.drawable.maria), // 將 R.drawable.maria 替換為你的圖片資源 ID
+                        painter = painterResource(id = R.drawable.maria),
                         contentDescription = null,
                         modifier = Modifier.fillMaxWidth()
                     )
